@@ -8,26 +8,48 @@ VAYU-GUARD - ระบบควบคุมและจัดการ UAV (Unma
 
 ## MCP Servers
 
-โปรเจกต์นี้ใช้ MCP servers ดังนี้:
-- **SSH**: เชื่อมต่อกับ server ระยะไกล (thaisummary.com)
+โปรเจกต์นี้ใช้ MCP servers:
+- **SSH**: เชื่อมต่อกับ remote server
 - **Supabase**: ฐานข้อมูลและ backend services
-- **GitHub**: จัดการ repository และ version control
+- **GitHub**: จัดการ repository
+
+## Technology Stack
+
+| Layer | Technology |
+|-------|------------|
+| Frontend | Next.js 14 + TypeScript |
+| Mobile | React Native / Expo |
+| Backend | Supabase + Edge Functions |
+| Database | PostgreSQL (Supabase) + PostGIS |
+| Streaming | WebRTC / HLS |
+| AI | Python + FastAPI |
+| Maps | Mapbox / Leaflet |
 
 ## Architecture
 
 ```
-VAYU-GUARD Server
-├── Web Service (API endpoints)
-├── API Server (business logic)
-├── NVR (video recording)
-└── AI Processing (target detection)
-
-Modules:
-├── Dashboard - รายงานผลและสรุปข้อมูล
-├── Back Office - จัดการข้อมูลพื้นฐาน, สิทธิ์, UAV inventory
-├── Combat Staff - แผนการบิน, นำเข้าเป้าหมาย, ตรวจสอบ VDO
-└── Mobile UAV Unit - บินอัตโนมัติตามแผน
+vayu-guard/
+├── apps/
+│   ├── web/           # Dashboard, Back Office, Combat Staff (Next.js)
+│   ├── mobile/        # Mobile UAV Unit (React Native)
+│   └── api/           # API Server
+├── packages/
+│   ├── shared/        # Shared types, utils
+│   └── ai-client/     # AI Server client SDK
+├── services/
+│   ├── streaming/     # Video Streaming Server
+│   ├── nvr/           # NVR Service
+│   └── ai/            # AI Processing (Python/FastAPI)
+└── supabase/
+    ├── migrations/
+    └── functions/     # Edge Functions
 ```
+
+### Modules
+- **Dashboard** - รายงานผลและสรุปข้อมูล (ผู้บริหาร, ผบ.หน่วย)
+- **Back Office** - จัดการข้อมูลพื้นฐาน, สิทธิ์, UAV inventory
+- **Combat Staff** - แผนการบิน, นำเข้าเป้าหมาย, ตรวจสอบ VDO (Commander/Operator)
+- **Mobile UAV Unit** - บินอัตโนมัติตามแผน
 
 ## Data Flow
 
@@ -37,8 +59,16 @@ Modules:
 4. AI วิเคราะห์ video → ส่ง JSON กลับ (flight_id, target_id, timestamps)
 5. ผลลัพธ์แสดงบน Dashboard
 
-## User Roles
+## Database Tables
 
-- **ผู้บริหาร / ผบ.หน่วย**: ดู Dashboard, เข้าถึง C2
-- **Commander / Operator**: ควบคุมผ่าน Combat Staff, กำหนดแผนการบิน
-- **ผู้ปฏิบัติ**: ดำเนินการตามสิทธิ์ที่ได้รับ
+```
+organizations, users, permissions
+uavs, uav_assignments
+flight_plans, flights, flight_logs
+targets, detections
+streams, recordings
+```
+
+## Development
+
+ดูรายละเอียดเพิ่มเติมใน `docs/project-plan.md`
